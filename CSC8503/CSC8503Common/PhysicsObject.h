@@ -52,6 +52,8 @@ namespace NCL {
 
 			void ClearForces();
 
+			void OnTriggerEnter(CollisionVolume* otherVolume);
+
 			void SetLinearVelocity(const Vector3& v) {
 				linearVelocity = v;
 			}

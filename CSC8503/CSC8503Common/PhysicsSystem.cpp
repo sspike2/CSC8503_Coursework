@@ -177,6 +177,7 @@ void PhysicsSystem::UpdateCollisionList()
 		{
 			i->a->OnCollisionBegin(i->b);
 			i->b->OnCollisionBegin(i->a);
+			//i->a.
 		}
 		(*i).framesLeft = (*i).framesLeft - 1;
 		if ((*i).framesLeft < 0)
@@ -311,6 +312,9 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 
 	float j = (-(1.0f + cRestitution) * impulseForce) /
 		(totalMass + angularEffect);
+
+	//TODO friction calculate  collision tanget  and add it using physics
+	//
 
 	Vector3 fullImpulse = p.normal * j;
 	physA->ApplyLinearImpulse(-fullImpulse);

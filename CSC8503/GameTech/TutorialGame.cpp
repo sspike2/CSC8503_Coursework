@@ -294,16 +294,17 @@ void TutorialGame::InitWorld()
 
 	//InitMixedGridWorld(5, 5, 3.5f, 3.5f);
 	//InitGameExamples();
-	//InitDefaultFloor();
-	//InitPlayer();
+	InitDefaultFloor();
+	InitPlayer();
 	//BridgeConstraintTest();
-	AddCapsuleToWorld(Vector3(1, 1, 1), 2, 1);
+	//GameObject* capsule = AddCapsuleToWorld(Vector3(1, 1, 1), 2, 1);
+	//capsule->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(0, 100, 0));
 	//testStateObject = AddStateObjectToWorld(Vector3(0, 10, 0));
 }
 
 void TutorialGame::InitPlayer()
 {
-	player = new PlayerClass();
+	player = new PlayerClass("Player");
 	float radius = 1.2f;
 
 	Vector3 sphereSize = Vector3(radius, radius, radius);
@@ -367,7 +368,7 @@ A single function to add a large immoveable cube to the bottom of our world
 */
 GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
 {
-	GameObject* floor = new GameObject();
+	GameObject* floor = new GameObject("Floor");
 
 	Vector3 floorSize = Vector3(100, 2, 100);
 	AABBVolume* volume = new AABBVolume(floorSize);
@@ -396,7 +397,7 @@ physics worlds. You'll probably need another function for the creation of OBB cu
 */
 GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius, float inverseMass)
 {
-	GameObject* sphere = new GameObject();
+	GameObject* sphere = new GameObject("Sphere");
 
 	Vector3 sphereSize = Vector3(radius, radius, radius);
 	SphereVolume* volume = new SphereVolume(radius);
@@ -419,7 +420,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 
 GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass)
 {
-	GameObject* capsule = new GameObject();
+	GameObject* capsule = new GameObject("Capsule");
 
 	CapsuleVolume* volume = new CapsuleVolume(halfHeight, radius);
 	capsule->SetBoundingVolume((CollisionVolume*)volume);
@@ -442,7 +443,7 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 
 GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass)
 {
-	GameObject* cube = new GameObject();
+	GameObject* cube = new GameObject("Cube");
 
 	AABBVolume* volume = new AABBVolume(dimensions);
 

@@ -81,6 +81,7 @@ namespace NCL
 		static bool RayAABBIntersection(const Ray& r, const Transform& worldTransform, const AABBVolume& volume, RayCollision& collision);
 		static bool RayOBBIntersection(const Ray& r, const Transform& worldTransform, const OBBVolume& volume, RayCollision& collision);
 		static bool RaySphereIntersection(const Ray& r, const Transform& worldTransform, const SphereVolume& volume, RayCollision& collision);
+		static bool RaySphereIntersection(const Ray& r, const Vector3& spherePos, const SphereVolume& volume, RayCollision& collision);
 		static bool RayCapsuleIntersection(const Ray& r, const Transform& worldTransform, const CapsuleVolume& volume, RayCollision& collision);
 
 

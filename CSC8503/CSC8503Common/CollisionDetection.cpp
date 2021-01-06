@@ -143,88 +143,86 @@ bool CollisionDetection::RayCapsuleIntersection(const Ray& r, const Transform& w
 	float capsuleRad = volume.GetRadius();
 	Vector3 raydir = r.GetDirection();
 	Vector3 raypos = r.GetPosition();
+	//worldTransform.GetOrientation().
 
-	//Vector3  upVector = Vector3(0, 1, 0) * worldTransform.GetOrientation().ToEuler();
+	Vector3  upVector = worldTransform.GetOrientation() * Vector3(0, 1, 0);
+	//Vector3 upVector = Vector3(0, 1, 0);
 
-	Vector3 upVector = Vector3(0, 1, 0);
+
 	Vector3 upPos = capsulePos + upVector; // second plane point
 	Vector3 capsuleDir = capsulePos - upPos;
 
-	Vector3 orthogonalVector =  Vector3::Cross(upVector, raydir);
-
+	Vector3 orthogonalVector = Vector3::Cross(upVector, raydir);
 	Vector3 planeNormal = Vector3::Cross(orthogonalVector, capsuleDir);
-
 	float planeDistance = -Vector3::Dot(planeNormal, capsulePos);
 
-	float ax = planeNormal.x;
-	float by = planeNormal.y;
-	float cz = planeNormal.z;
-
-	float d2 = ax + by + cz;
-	//float d = -1.0f * (planeNormal.x + planeNormal.y + planeNormal.z);
 
 	Plane p = Plane(planeNormal, planeDistance);
 
-	//RayPlaneIntersection()
-
-
-
-	bool a = RayPlaneIntersection(r, p, collision);
-
-	std::cout << a;
-	//Vector3::Dot()
-
+	RayPlaneIntersection(r, p, collision);
 	Vector3 topPos = upPos * (volume.GetHalfHeight() - capsuleRad);
 
 
 	// northen hemisphere
 	Vector3 vA = topPos - collision.collidedAt;
 	Vector3 vB = topPos - capsulePos;
-
 	float isPointInhemisphere = Vector3::Dot(vA, vB);
 
 	if (isPointInhemisphere < 0)
 	{
 		// point in northen hemisphere
 		SphereVolume sphere = SphereVolume(capsuleRad);
-		//RaySphereIntersection(r,)
+		bool coll = RaySphereIntersection(r, topPos, sphere, collision);
+		if (coll)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	// southern hemisphere
-
-	Vector3 botPos = capsulePos - Vector3(0, 1, 0) * (volume.GetHalfHeight() - capsuleRad);
-
+	Vector3 botPos = capsulePos - upVector * (volume.GetHalfHeight() - capsuleRad);
 	vA = botPos - collision.collidedAt;
 	vB = botPos - capsulePos;
-
 	isPointInhemisphere = Vector3::Dot(vA, vB);
-
 	if (isPointInhemisphere < 0)
 	{
-		// point in northen hemisphere
+		// point in southern hemisphere
 		SphereVolume sphere = SphereVolume(capsuleRad);
-		//RaySphereIntersection(r,)
+		bool coll = RaySphereIntersection(r, botPos, sphere, collision);
+		if (coll)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
-	//if(Vector3::Length(c))
 
-	Vector3 d = capsulePos + Vector3(0, 1, 0) * (Vector3::Dot(collision.collidedAt, Vector3(0, 1, 0)));
-	//Vector3::Length()
-	//Vector3::
+	Vector3 d = capsulePos + upVector * (Vector3::Dot((collision.collidedAt - capsulePos), upVector));
 
+ 	float dist = Vector3::Distance(d, collision.collidedAt);
 
-	if (Vector3::Distance(d, collision.collidedAt) < capsuleRad)
+	if (dist > capsuleRad)
 	{
 		return false;
 	}
 	else
 	{
 		// sphere collision
+		SphereVolume sphere = SphereVolume(capsuleRad);
+		bool coll = RaySphereIntersection(r, d, sphere, collision);
+		if (coll)
+		{
+			return true;
+		}
+
 	}
-
-
-
-
 
 
 	return false;
@@ -234,6 +232,14 @@ bool CollisionDetection::RaySphereIntersection(const Ray& r, const Transform& wo
 {
 	//return false;
 	Vector3 spherePos = worldTransform.GetPosition();
+
+	return RaySphereIntersection(r, spherePos, volume, collision);
+}
+
+
+bool CollisionDetection::RaySphereIntersection(const Ray& r, const Vector3& spherePos, const SphereVolume& volume, RayCollision& collision)
+{
+	//return false;
 	float sphereRadius = volume.GetRadius();
 
 	// Get the direction between the ray origin and the sphere origin
@@ -625,5 +631,31 @@ bool CollisionDetection::SphereCapsuleIntersection(
 	const CapsuleVolume& volumeA, const Transform& worldTransformA,
 	const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo)
 {
+	Vector3 capsulePos = worldTransformA.GetPosition();
+	Vector3 spherePos = worldTransformB.GetPosition();
+
+	
+
+	Vector3 d = capsulePos + Vector3(0, 1, 0) * 
+		(Vector3::Dot(spherePos - capsulePos, Vector3(0, 1, 0)));
+
+
+	float radii = volumeA.GetRadius() + volumeB.GetRadius();
+
+	Vector3 delta = spherePos - d;
+	float deltaLength = delta.Length();
+
+	if (deltaLength < radii)
+	{
+		float penetration = (radii - deltaLength);
+		Vector3 normal = delta.Normalised();
+		Vector3 localA = normal * volumeA.GetRadius();
+		Vector3 localB = -normal * volumeB.GetRadius();
+
+		collisionInfo.AddContactPoint(localA, localB, normal, penetration);
+		return true;// we 're colliding !
+	}
+
+
 	return false;
 }

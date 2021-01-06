@@ -1,6 +1,6 @@
 #include "PlayerClass.h"
 #include "../../Common/Window.h"
-
+#include "../../Common/Maths.h"
 
 
 
@@ -10,28 +10,63 @@ namespace NCL
 	namespace CSC8503
 	{
 
+
+		PlayerClass::PlayerClass(string name)
+		{
+			this->name = name;
+			worldID = -1;
+			isActive = true;
+			boundingVolume = nullptr;
+			physicsObject = nullptr;
+			renderObject = nullptr;
+		}
+
 		void PlayerClass::Update(float dt)
 		{
+
+
 			if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::W))
 			{
-				physicsObject->SetLinearVelocity(Vector3(0, 0, -speed));
+				physicsObject->AddForce(Vector3(0, 0, -speed));
 			}
 			if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::S))
 			{
-				physicsObject->SetLinearVelocity(Vector3(0, 0, speed));
+				physicsObject->AddForce(Vector3(0, 0, speed));
 			}
 			if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A))
 			{
-				physicsObject->SetLinearVelocity(Vector3(-speed, 0, 0));
+				physicsObject->AddForce(Vector3(-speed, 0, 0));
 			}
 			if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D))
 			{
-				physicsObject->SetLinearVelocity(Vector3(speed, 0, 0));
+				physicsObject->AddForce(Vector3(speed, 0, 0));
 			}
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE))
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE) && isGrounded)
 			{
-				physicsObject->AddForce(Vector3(0, 1000, 0));
+				Jump();
 			}
+			velocity = physicsObject->GetLinearVelocity();
+
+			Vector3  vel = Maths::Clamp(velocity, Vector3(-100, -100, -100), Vector3(100, 100, 100));
+			physicsObject->SetLinearVelocity(vel);
+
+
+		}
+
+
+
+		void PlayerClass::OnCollisionBegin(GameObject* otherObject)
+		{
+			if (otherObject->layer == Layer::Ground)
+			{
+				isGrounded = true;
+			}
+		}
+
+		void PlayerClass::Jump()
+		{
+			isGrounded = false;
+			physicsObject->AddForce(Vector3(0, 1000, 0));
 		}
 	}
 }
