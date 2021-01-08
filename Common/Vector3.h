@@ -60,15 +60,15 @@ namespace NCL
 					z = z * length;
 				}
 			}
-		/*	static constexpr float	Dot(const Vector3& a, const Vector3& b)
-			{
-				return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
-			}*/
+			/*	static constexpr float	Dot(const Vector3& a, const Vector3& b)
+				{
+					return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+				}*/
 			static  float Distance(const Vector3& v1, const Vector3& v2)
 			{
 				return  sqrt(((v2.x - v1.x) * (v2.x - v1.x))
-							+ ((v2.y - v1.y) * (v2.y - v1.y))
-							+ ((v2.z - v1.z) * (v2.z - v1.z)));
+					+ ((v2.y - v1.y) * (v2.y - v1.y))
+					+ ((v2.z - v1.z) * (v2.z - v1.z)));
 			}
 
 			float	Length() const
@@ -161,12 +161,29 @@ namespace NCL
 				z += a.z;
 			}
 
+			inline  Vector3 operator+ (const float& a)
+			{
+				x += a;
+				y += a;
+				z += a;
+				return(Vector3(x, y, z));
+			}
+
 			inline void operator-=(const Vector3& a)
 			{
 				x -= a.x;
 				y -= a.y;
 				z -= a.z;
 			}
+
+			inline Vector3 operator-(const float& a)
+			{
+				x -= a;
+				y -= a;
+				z -= a;
+				return(Vector3(x, y, z));
+			}
+
 
 
 			inline void operator*=(const Vector3& a)
