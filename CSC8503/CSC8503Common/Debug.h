@@ -18,6 +18,8 @@ namespace NCL {
 
 		static void FlushRenderables(float dt);
 
+		//static Render
+
 
 		static const Vector4 RED;
 		static const Vector4 GREEN;
@@ -30,6 +32,7 @@ namespace NCL {
 		static const Vector4 MAGENTA;
 		static const Vector4 CYAN;
 
+		static OGLRenderer* renderer;
 	protected:
 		struct DebugStringEntry {
 			std::string	data;
@@ -50,7 +53,6 @@ namespace NCL {
 		static std::vector<DebugStringEntry>	stringEntries;
 		static std::vector<DebugLineEntry>	lineEntries;
 
-		static OGLRenderer* renderer;
 	};
 }
 

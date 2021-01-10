@@ -18,7 +18,10 @@ namespace NCL
 		{
 			Ground = 0,
 			Player = 1,
-			Collectible = 2
+			Collectible = 2,
+			Lava = 3,
+			Ice = 4,
+			Sticky = 5,
 		};
 
 		class GameObject

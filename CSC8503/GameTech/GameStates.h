@@ -23,8 +23,13 @@ CourseGame* g;
 
 class Pause : public PushdownState
 {
+
+
+
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override
 	{
+		Debug::Print("Press P To Resume", Vector2(20, 50), Vector4(1, 0, 0, 1));
+		Debug::FlushRenderables(dt);
 
 
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P))
@@ -36,7 +41,7 @@ class Pause : public PushdownState
 	void OnAwake() override
 	{
 		//Debug::
-		Debug::Print("Press Space To  Start", Vector2(50, 50), Vector4(1, 0, 0, 1));
+		Debug::Print("Press Space To  Start", Vector2(5, 50), Vector4(1, 0, 0, 1));
 		std::cout << "Paused";
 	}
 };

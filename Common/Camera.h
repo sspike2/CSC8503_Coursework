@@ -20,7 +20,7 @@ namespace NCL {
 			pitch		= 0.0f;
 			yaw			= 0.0f;
 
-			fov			= 45.0f;
+			fov			= 90;
 			nearPlane	= 1.0f;
 			farPlane	= 100.0f;
 
@@ -32,7 +32,7 @@ namespace NCL {
 			this->yaw		= yaw;
 			this->position	= position;
 
-			this->fov		= 45.0f;
+			this->fov		= 90;
 			this->nearPlane = 1.0f;
 			this->farPlane	= 100.0f;
 

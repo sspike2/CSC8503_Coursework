@@ -45,8 +45,8 @@ namespace NCL
 			{
 				Jump();
 			}
-			velocity = physicsObject->GetLinearVelocity();
 
+			velocity = physicsObject->GetLinearVelocity();
 			Vector3  vel = Maths::Clamp(velocity, Vector3(-100, -100, -100), Vector3(100, 100, 100));
 			physicsObject->SetLinearVelocity(vel);
 
@@ -61,6 +61,12 @@ namespace NCL
 			{
 				isGrounded = true;
 			}
+			if (otherObject->layer == Layer::Collectible)
+			{
+				//coins += 12;
+			}
+
+
 		}
 
 		void PlayerClass::Jump()

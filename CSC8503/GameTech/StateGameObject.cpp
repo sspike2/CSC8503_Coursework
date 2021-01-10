@@ -8,7 +8,7 @@ using namespace CSC8503;
 
 StateGameObject::StateGameObject()
 {
-	counter = 0.0f;
+	counter = 1.5f;
 	stateMachine = new StateMachine();
 
 	State* stateA = new State([&](float dt)-> void

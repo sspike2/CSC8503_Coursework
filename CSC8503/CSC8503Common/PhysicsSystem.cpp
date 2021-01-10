@@ -275,6 +275,7 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 
 	float totalMass = physA->GetInverseMass() + physB->GetInverseMass();
 
+
 	if (totalMass == 0)
 	{
 		return; // two static objects ??
@@ -301,6 +302,8 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	Vector3 contactVelocity = fullVelocityB - fullVelocityA;
 	float impulseForce = Vector3::Dot(contactVelocity, p.normal);
 
+	//Vector3
+
 	// now to work out the effect of inertia ....
 	Vector3 inertiaA = Vector3::Cross(physA->GetInertiaTensor() *
 		Vector3::Cross(relativeA, p.normal), relativeA);
@@ -313,10 +316,22 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	float j = (-(1.0f + cRestitution) * impulseForce) /
 		(totalMass + angularEffect);
 
-	//TODO friction calculate  collision tanget  and add it using physics
+	///TODO friction calculate  collision tanget  and add it using physics
 	//
 
+	Vector3 tangent = contactVelocity - (p.normal * Vector3::Dot(contactVelocity, p.normal));
+	Vector3 tangentNormalized = tangent.Normalised();
+
+	float angularfriction = Vector3::Dot(inertiaA + inertiaB, tangentNormalized);
+	//TODO add variable
+	float jt = (- .5f * Vector3::Dot(contactVelocity, tangentNormalized)) / (totalMass + angularfriction);
+	Vector3 frictionImpulse = tangentNormalized * jt;
+
+
+
 	Vector3 fullImpulse = p.normal * j;
+	fullImpulse += frictionImpulse;
+
 	physA->ApplyLinearImpulse(-fullImpulse);
 	physB->ApplyLinearImpulse(fullImpulse);
 

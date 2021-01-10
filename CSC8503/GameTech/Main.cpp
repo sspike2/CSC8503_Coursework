@@ -213,6 +213,7 @@ void TestPushdownAutomata(Window* w)
 {
 	//PushdownMachine mac(new MainMenu());
 	PushdownMachine machine(new MainMenu());
+	//machine.
 	while (w->UpdateWindow())
 	{
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();

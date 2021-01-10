@@ -82,4 +82,5 @@ void Debug::FlushRenderables(float dt) {
 	lineEntries.resize(lineEntries.size() - trim);
 
 	stringEntries.clear();
+	renderer->Render();
 }

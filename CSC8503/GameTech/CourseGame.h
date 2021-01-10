@@ -3,6 +3,7 @@
 #include "../CSC8503Common/PhysicsSystem.h"
 #include "StateGameObject.h"
 #include "PlayerClass.h"
+//#include "WorldGeneration.h"
 
 namespace NCL
 {
@@ -15,16 +16,17 @@ namespace NCL
 			~CourseGame();
 
 			virtual void UpdateGame(float dt);
+			void UpdatePause(float dt);
+
+			GameWorld* world;
 
 		protected:
-			void InitialiseAssets();
 
 			void InitCamera();
 			void UpdateKeys();
 
 			void InitWorld();
 
-			void InitPlayer();
 
 			void InitGameExamples();
 
@@ -32,29 +34,19 @@ namespace NCL
 			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
 			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, const Vector3& cubeDims);
 			void InitDefaultFloor();
-			void BridgeConstraintTest();
 
 			bool SelectObject();
 			void MoveSelectedObject();
 			void DebugObjectMovement();
 			void LockedObjectMovement();
 
-			GameObject* AddFloorToWorld(const Vector3& position);
-			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
-			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
-
-			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass = 10.0f);
-
-			GameObject* AddPlayerToWorld(const Vector3& position);
-			GameObject* AddEnemyToWorld(const Vector3& position);
-			GameObject* AddBonusToWorld(const Vector3& position);
-
-			StateGameObject* AddStateObjectToWorld(const Vector3& position);
-			StateGameObject* testStateObject;
+			
+		
 
 			GameTechRenderer* renderer;
 			PhysicsSystem* physics;
-			GameWorld* world;
+
+			//WorldGeneration* worldGen;
 
 			PlayerClass* player = nullptr;
 
@@ -65,18 +57,7 @@ namespace NCL
 
 			GameObject* selectionObject = nullptr;
 
-			OGLMesh* capsuleMesh = nullptr;
-			OGLMesh* cubeMesh = nullptr;
-			OGLMesh* sphereMesh = nullptr;
-			OGLTexture* basicTex = nullptr;
-			OGLTexture* playerTex = nullptr;
-			OGLShader* basicShader = nullptr;
-
-			//Coursework Meshes
-			OGLMesh* charMeshA = nullptr;
-			OGLMesh* charMeshB = nullptr;
-			OGLMesh* enemyMesh = nullptr;
-			OGLMesh* bonusMesh = nullptr;
+			
 
 			//Coursework Additional functionality	
 			GameObject* lockedObject = nullptr;

@@ -65,9 +65,8 @@ namespace NCL
 				return false;
 			}
 		};
-
 		
-
+		
 		//TODO ADD THIS PROPERLY
 		static bool RayBoxIntersection(const Ray& r, const Vector3& boxPos, const Vector3& boxSize, RayCollision& collision);
 
@@ -108,7 +107,15 @@ namespace NCL
 			const AABBVolume& volumeA, const Transform& worldTransformA,
 			const CapsuleVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo);
 
+		static bool OBBSphereIntersection(
+			const OBBVolume& volumeA, const Transform& worldTransformA, 
+			const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo);
 
+		static bool OBBCapsuleIntersection(const OBBVolume& volumeA, const Transform& worldTransformA,
+			const CapsuleVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo);
+
+		static bool OBBCapsuleIntersection2(const OBBVolume& volumeA, const Transform& worldTransformA, 
+			const CapsuleVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo);
 
 
 
@@ -122,6 +129,8 @@ namespace NCL
 		static Matrix4		GenerateInverseView(const Camera& c);
 
 	protected:
+
+
 
 	private:
 		CollisionDetection() {}

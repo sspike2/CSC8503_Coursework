@@ -9,6 +9,7 @@ namespace NCL
 			public State
 		{
 		public:
+
 			enum PushdownResult
 			{
 				Push, Pop, NoChange
