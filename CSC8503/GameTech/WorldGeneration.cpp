@@ -71,42 +71,54 @@ void WorldGeneration::InitWorld()
 	}
 
 	//LAVA
-	GameObject* lava1 = AddCubeToWorld(Vector3(-90, -3.4f, 60), Vector3(65, 4, 7),
+	GameObject* lava1 = AddCubeToWorld(Vector3(-90, 0.1f, 60), Vector3(65,0.1f, 7),
 		0, lavaTex);
 	lava1->layer = Layer::Lava;
 
-	GameObject* lava2 = AddCubeToWorld(Vector3(90, -3.4f, 60), Vector3(65, 4, 7),
+	GameObject* lava2 = AddCubeToWorld(Vector3(90, 0.1f, 60), Vector3(65,0.1f, 7),
 		0, lavaTex);
 	lava2->layer = Layer::Lava;
 
 
 	//Sticky
-	GameObject* sticky1 = AddCubeToWorld(Vector3(0, -3.4f, 120), Vector3(60, 4, 7),
+	GameObject* sticky1 = AddCubeToWorld(Vector3(0, 0.1f, 120), Vector3(60,0.1f, 7),
 		0, blankTex, Vector4(1, 1, 0, 1));
 	sticky1->layer = Layer::Sticky;
-
-	GameObject* sticky2 = AddCubeToWorld(Vector3(0, -3.4f, 240), Vector3(60, 4, 7),
+	GameObject* sticky2 = AddCubeToWorld(Vector3(0, 0.1f, 240), Vector3(60,0.1f, 7),
 		0, blankTex, Vector4(1, 1, 0, 1));
 	sticky2->layer = Layer::Sticky;
 
 	//Icy
-	GameObject* icy = AddCubeToWorld(Vector3(0, -3.4f, 180), Vector3(150, 4, 7),
+	GameObject* icy = AddCubeToWorld(Vector3(0, 0.1f, 180), Vector3(150,0.1f, 7),
 		0, blankTex, Vector4(0, 1, 0.75f, 1));
 	icy->layer = Layer::Ice;
 
 
-	//StateMachine
+	////StateMachine
 
-	//statemachine walls
-	for (int i = 0; i < 4; i++)
+	////statemachine walls
+	//for (int i = 0; i < 4; i++)
+	//{
+	//	AddCubeToWorld(StateMachineWallPosition[i], Vector3(5, 14, 5), 0,
+	//		blankTex, Vector4(.2f, .2f, .2f, 1));
+	//}
+	////TODO add stateMachine
+	stateObjects.emplace_back(AddStateObjectToWorld(Vector3(0, 5, 10)));
+
+	//player
+
+	InitPlayer();
+
+}
+
+
+
+void WorldGeneration::Update(float dt)
+{
+	for (int i = 0; i < stateObjects.size(); i++)
 	{
-		AddCubeToWorld(StateMachineWallPosition[i], Vector3(5,14,5), 0,
-			blankTex, Vector4(.2f, .2f, .2f, 1));
+		stateObjects[i]->Update(dt);
 	}
-	//TODO add stateMachine
-
-
-
 }
 
 
@@ -218,6 +230,8 @@ GameObject* WorldGeneration::AddPlayerToWorld(const Vector3& position)
 
 	world->AddGameObject(character);
 
+
+
 	//lockedObject = character;
 
 	return character;
@@ -261,7 +275,7 @@ StateGameObject* WorldGeneration::AddStateObjectToWorld(const Vector3& position)
 	apple->SetRenderObject(new RenderObject(&apple->GetTransform(), bonusMesh, nullptr, basicShader));
 	apple->SetPhysicsObject(new PhysicsObject(&apple->GetTransform(), apple->GetBoundingVolume()));
 
-	apple->GetPhysicsObject()->SetInverseMass(1.0f);
+	apple->GetPhysicsObject()->SetInverseMass(0.f);
 	apple->GetPhysicsObject()->InitSphereInertia();
 
 	world->AddGameObject(apple);
@@ -348,18 +362,19 @@ GameObject* WorldGeneration::AddCapsuleToWorld(const Vector3& position, float ha
 GameObject* WorldGeneration::InitPlayer()
 {
 	PlayerClass* player = new PlayerClass("Player");
-	float radius = 1.2f;
+	float radius = 1;
 
 	Vector3 sphereSize = Vector3(radius, radius, radius);
-	SphereVolume* volume = new SphereVolume(radius);
+
+	CapsuleVolume* volume = new CapsuleVolume(5, radius);
 
 	player->SetBoundingVolume((CollisionVolume*)volume);
 
 	player->GetTransform()
-		.SetScale(sphereSize)
+		.SetScale(Vector3(5, 5, 5))
 		.SetPosition(Vector3(0, 10, 0));
 
-	player->SetRenderObject(new RenderObject(&player->GetTransform(), sphereMesh, playerTex, basicShader));
+	player->SetRenderObject(new RenderObject(&player->GetTransform(), capsuleMesh, playerTex, basicShader));
 	//player->setc
 	player->SetPhysicsObject(new PhysicsObject(&player->GetTransform(), player->GetBoundingVolume()));
 
@@ -367,6 +382,10 @@ GameObject* WorldGeneration::InitPlayer()
 	player->GetPhysicsObject()->InitSphereInertia();
 
 	world->AddGameObject(player);
+
+	courseGame->SetPlayer(player);
+	//courseGame->GetPlayer().
+
 	return player;
 }
 

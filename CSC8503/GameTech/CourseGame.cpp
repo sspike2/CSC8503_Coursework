@@ -5,7 +5,6 @@
 #include "../../Plugins/OpenGLRendering/OGLTexture.h"
 #include "../../Common/TextureLoader.h"
 #include "../CSC8503Common/PositionConstraint.h"
-#include "WorldGeneration.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -17,8 +16,7 @@ CourseGame::CourseGame()
 	world = new GameWorld();
 	renderer = new GameTechRenderer(*world);
 	physics = new PhysicsSystem(*world);
-	//worldGen = new WorldGeneration();
-	WorldGeneration* gen = new WorldGeneration(world);
+	worldGen = new WorldGeneration(world, this);
 
 
 	forceMagnitude = 10.0f;
@@ -36,7 +34,7 @@ CourseGame::CourseGame()
 
 
 CourseGame::~CourseGame()
-{	
+{
 
 	delete physics;
 	delete renderer;
@@ -56,17 +54,22 @@ void CourseGame::UpdateGame(float dt)
 		player->Update(dt);
 	}
 
-	if (useGravity)
+	if (worldGen != nullptr)
 	{
-		Debug::Print("(G)ravity on", Vector2(5, 95));
-	}
-	else
-	{
-		Debug::Print("(G)ravity off", Vector2(5, 95));
+		worldGen->Update(dt);
 	}
 
+	//if (useGravity)
+	//{
+	//	Debug::Print("(G)ravity on", Vector2(5, 95));
+	//}
+	//else
+	//{
+	//	Debug::Print("(G)ravity off", Vector2(5, 95));
+	//}
+
 	SelectObject();
-	MoveSelectedObject();
+	//MoveSelectedObject();
 	physics->Update(dt);
 
 	if (lockedObject != nullptr)
@@ -123,11 +126,11 @@ void CourseGame::UpdateKeys()
 		InitCamera(); //F2 will reset the camera to a specific default place
 	}
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G))
-	{
-		useGravity = !useGravity; //Toggle gravity!
-		physics->UseGravity(useGravity);
-	}
+	//if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G))
+	//{
+	//	useGravity = !useGravity; //Toggle gravity!
+	//	physics->UseGravity(useGravity);
+	//}
 	//Running certain physics updates in a consistent order might cause some
 	//bias in the calculations - the same objects might keep 'winning' the constraint
 	//allowing the other one to stretch too much etc. Shuffling the order so that it
@@ -150,14 +153,14 @@ void CourseGame::UpdateKeys()
 		world->ShuffleObjects(false);
 	}
 
-	if (lockedObject)
-	{
-		LockedObjectMovement();
-	}
-	else
-	{
-		DebugObjectMovement();
-	}
+	//if (lockedObject)
+	//{
+		//LockedObjectMovement();
+	//}
+	//else
+	//{
+		//DebugObjectMovement();
+	//}
 }
 
 void CourseGame::LockedObjectMovement()
@@ -261,10 +264,10 @@ void CourseGame::InitCamera()
 	world->GetMainCamera()->SetNearPlane(0.1f);
 	world->GetMainCamera()->SetFarPlane(50000.0f);
 	world->GetMainCamera()->SetPitch(-15.0f);
-	world->GetMainCamera()->SetYaw(315.0f);
+	world->GetMainCamera()->SetYaw(180);
 	world->GetMainCamera()->SetPosition(Vector3(14, 23.5f, -12));
 	//world->GetMainCamera()->
-	lockedObject = nullptr;
+	lockedObject = player;
 }
 
 void CourseGame::InitWorld()
@@ -379,11 +382,18 @@ bool CourseGame::SelectObject()
 		inSelectionMode = !inSelectionMode;
 		if (inSelectionMode)
 		{
+			
 			Window::GetWindow()->ShowOSPointer(true);
 			Window::GetWindow()->LockMouseToWindow(false);
 		}
 		else
 		{
+			if (selectionObject)
+			{
+				selectionObject->GetRenderObject()->SetColour(selectedObjColor);
+				selectionObject = nullptr;
+				lockedObject = player;
+			}
 			Window::GetWindow()->ShowOSPointer(false);
 			Window::GetWindow()->LockMouseToWindow(true);
 		}
@@ -395,11 +405,11 @@ bool CourseGame::SelectObject()
 		if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))
 		{
 			if (selectionObject)
-			{	//set colour to deselected;
-				selectionObject->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
+			{		
 
+				selectionObject->GetRenderObject()->SetColour(selectedObjColor);
 				selectionObject = nullptr;
-				lockedObject = nullptr;
+				lockedObject = player;				
 			}
 
 			Ray ray = CollisionDetection::BuildRayFromMouse(*world->GetMainCamera());
@@ -408,7 +418,10 @@ bool CourseGame::SelectObject()
 			if (world->Raycast(ray, closestCollision, true))
 			{
 				selectionObject = (GameObject*)closestCollision.node;
-				selectionObject->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
+				RenderObject* render = selectionObject->GetRenderObject();
+				selectedObjColor = render->GetColour();
+				render->SetColour(Vector4(0, 1, 0, 1));
+
 				return true;
 			}
 			else
@@ -422,12 +435,12 @@ bool CourseGame::SelectObject()
 		renderer->DrawString("Press Q to change to select mode!", Vector2(5, 85));
 	}
 
-	if (lockedObject)
-	{
-		renderer->DrawString("Press L to unlock object!", Vector2(5, 80));
-	}
+	//if (lockedObject)
+	//{
+		//renderer->DrawString("Press L to unlock object!", Vector2(5, 80));
+	//}
 
-	else if (selectionObject)
+	 if (selectionObject != nullptr)
 	{
 		int x = selectionObject->GetTransform().GetOrientation().ToEuler().x;
 		int y = selectionObject->GetTransform().GetOrientation().ToEuler().y;
@@ -437,7 +450,7 @@ bool CourseGame::SelectObject()
 			+ std::to_string(y) + " "
 			+ std::to_string(z) + " ";
 
-		renderer->DrawString("Press L to lock selected object object!", Vector2(5, 80));
+		//renderer->DrawString("Press L to lock selected object object!", Vector2(5, 80));
 		renderer->DrawString(str, Vector2(5, 75));
 
 	}
@@ -460,6 +473,10 @@ bool CourseGame::SelectObject()
 
 	return false;
 }
+
+
+
+
 
 /*
 If an object has been clicked, it can be pushed with the right mouse button, by an amount

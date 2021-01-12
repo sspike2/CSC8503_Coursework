@@ -28,6 +28,7 @@ StateGameObject::StateGameObject()
 	stateMachine->AddTransition(new StateTransition(stateA, stateB,
 		[&]() -> bool
 		{
+			GetPhysicsObject()->SetLinearVelocity(Vector3());
 			return this->counter > 3.0f;
 		}
 	));
@@ -35,6 +36,7 @@ StateGameObject::StateGameObject()
 	stateMachine->AddTransition(new StateTransition(stateB, stateA,
 		[&]() -> bool
 		{
+			GetPhysicsObject()->SetLinearVelocity(Vector3());
 			return this->counter < 0.0f;
 		}
 	));

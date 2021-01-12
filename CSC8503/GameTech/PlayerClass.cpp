@@ -27,19 +27,19 @@ namespace NCL
 
 			if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::W))
 			{
-				physicsObject->AddForce(Vector3(0, 0, -speed));
+				physicsObject->AddForce(Vector3(0, 0, speed));
 			}
 			if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::S))
 			{
-				physicsObject->AddForce(Vector3(0, 0, speed));
+				physicsObject->AddForce(Vector3(0, 0, -speed));
 			}
 			if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A))
 			{
-				physicsObject->AddForce(Vector3(-speed, 0, 0));
+				physicsObject->AddForce(Vector3(speed, 0, 0));
 			}
 			if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D))
 			{
-				physicsObject->AddForce(Vector3(speed, 0, 0));
+				physicsObject->AddForce(Vector3(-speed, 0, 0));
 			}
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE) && isGrounded)
 			{
@@ -47,7 +47,12 @@ namespace NCL
 			}
 
 			velocity = physicsObject->GetLinearVelocity();
-			Vector3  vel = Maths::Clamp(velocity, Vector3(-100, -100, -100), Vector3(100, 100, 100));
+			/*if (!isGrounded)
+			{
+				velocity += Vector3(0, 1.2, 0);
+			}*/
+
+			Vector3  vel = Maths::Clamp(velocity, Vector3(-200, -400, -200), Vector3(200, 400, 200));
 			physicsObject->SetLinearVelocity(vel);
 
 
@@ -57,6 +62,8 @@ namespace NCL
 
 		void PlayerClass::OnCollisionBegin(GameObject* otherObject)
 		{
+
+			
 			if (otherObject->layer == Layer::Ground)
 			{
 				isGrounded = true;
@@ -65,6 +72,18 @@ namespace NCL
 			{
 				//coins += 12;
 			}
+			if (otherObject->layer == Layer::Ice)
+			{
+
+			}
+			if (otherObject->layer == Layer::Sticky)
+			{
+
+			}
+			if (otherObject->layer == Layer::Lava)
+			{
+
+			}
 
 
 		}
@@ -72,7 +91,7 @@ namespace NCL
 		void PlayerClass::Jump()
 		{
 			isGrounded = false;
-			physicsObject->AddForce(Vector3(0, 1000, 0));
+			physicsObject->AddForce(Vector3(0, 500, 0));
 		}
 	}
 }

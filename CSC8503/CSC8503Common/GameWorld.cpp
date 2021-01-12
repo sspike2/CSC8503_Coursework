@@ -54,6 +54,11 @@ void GameWorld::GetObjectIterators(
 	last	= gameObjects.end();
 }
 
+
+
+
+
+
 void GameWorld::OperateOnContents(GameObjectFunc f) {
 	for (GameObject* g : gameObjects) {
 		f(g);

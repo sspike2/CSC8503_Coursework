@@ -19,7 +19,7 @@ namespace NCL
 		protected:
 			int playerHealth = 100;
 			int score = 0;
-			int speed = 10;
+			int speed = 25;
 			bool isGrounded;
 			Vector3 velocity;
 

@@ -9,18 +9,20 @@ using namespace CSC8503;
 class WorldGeneration
 {
 public:
-	WorldGeneration(GameWorld* world)
+	WorldGeneration(GameWorld* world,CourseGame* courseGame)
 	{
 		this->world = world;
+		this->courseGame = courseGame;
 		InitialiseAssets();
 	}
 	~WorldGeneration();
 
-
+void	Update(float dt);
 
 protected:
 
 	GameWorld* world;
+	CourseGame* courseGame;
 
 	//Coursework Meshes
 
@@ -84,15 +86,18 @@ protected:
 	GameObject* AddOBBToWorld(const Vector3& position, Vector3 dimensions,Vector3 eulerAngles, float inverseMass,
 									OGLTexture* tex, Vector4 color = Vector4(1, 1, 1, 1));
 
+	GameObject* AddPlayerToWorld(const Vector3& position);
+
 	//TODO
 	GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
 	GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass = 10.0f);
-	GameObject* AddPlayerToWorld(const Vector3& position);
 	GameObject* AddEnemyToWorld(const Vector3& position);
 	GameObject* AddBonusToWorld(const Vector3& position);
 
 	StateGameObject* AddStateObjectToWorld(const Vector3& position);
-	StateGameObject* testStateObject;
+	std::vector <StateGameObject*> stateObjects;
+
+
 
 	GameObject* InitPlayer();
 

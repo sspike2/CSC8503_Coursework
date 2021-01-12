@@ -3,6 +3,8 @@
 #include "Ray.h"
 #include "CollisionDetection.h"
 #include "QuadTree.h"
+#include "StateMachine.h"
+#include "../GameTech/StateGameObject.h"
 namespace NCL {
 		class Camera;
 		using Maths::Ray;
@@ -48,6 +50,7 @@ namespace NCL {
 			void GetObjectIterators(
 				GameObjectIterator& first,
 				GameObjectIterator& last) const;
+
 
 			void GetConstraintIterators(
 				std::vector<Constraint*>::const_iterator& first,

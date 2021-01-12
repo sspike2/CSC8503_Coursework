@@ -3,7 +3,7 @@
 #include "../CSC8503Common/PhysicsSystem.h"
 #include "StateGameObject.h"
 #include "PlayerClass.h"
-//#include "WorldGeneration.h"
+#include "WorldGeneration.h"
 
 namespace NCL
 {
@@ -20,7 +20,12 @@ namespace NCL
 
 			GameWorld* world;
 
+			void SetPlayer(PlayerClass* player) { this->player = player; }
+			PlayerClass* GetPlayer() { return player; }
+
 		protected:
+
+			
 
 			void InitCamera();
 			void UpdateKeys();
@@ -41,7 +46,7 @@ namespace NCL
 			void LockedObjectMovement();
 
 			
-		
+			Vector4 selectedObjColor;
 
 			GameTechRenderer* renderer;
 			PhysicsSystem* physics;
@@ -61,11 +66,13 @@ namespace NCL
 
 			//Coursework Additional functionality	
 			GameObject* lockedObject = nullptr;
-			Vector3 lockedOffset = Vector3(0, 14, 20);
+			Vector3 lockedOffset = Vector3(0, 14, -20);
 			void LockCameraToObject(GameObject* o)
 			{
 				lockedObject = o;
 			}
+
+			WorldGeneration* worldGen;
 
 		};
 	}
