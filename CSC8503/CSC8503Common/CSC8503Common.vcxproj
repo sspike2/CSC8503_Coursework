@@ -134,6 +134,8 @@
   <ItemGroup>
     <ClInclude Include="AABBVolume.h" />
     <ClInclude Include="CapsuleVolume.h" />
+    <ClInclude Include="HingeJointConstraint.h" />
+    <ClInclude Include="LockPerAxisConstraint.h" />
     <ClInclude Include="NavigationGrid.h" />
     <ClInclude Include="NavigationMap.h" />
     <ClInclude Include="NavigationMesh.h" />
@@ -164,6 +166,8 @@
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameWorld.cpp" />
+    <ClCompile Include="HingeJointConstraint.cpp" />
+    <ClCompile Include="LockPerAxisConstraint.cpp" />
     <ClCompile Include="NavigationGrid.cpp" />
     <ClCompile Include="NavigationMesh.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />

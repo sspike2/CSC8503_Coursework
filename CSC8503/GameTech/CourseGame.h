@@ -9,6 +9,8 @@ namespace NCL
 {
 	namespace CSC8503
 	{
+		class WorldGeneration;
+
 		class CourseGame
 		{
 		public:
@@ -19,6 +21,7 @@ namespace NCL
 			void UpdatePause(float dt);
 
 			GameWorld* world;
+			bool inSelectionMode;
 
 			void SetPlayer(PlayerClass* player) { this->player = player; }
 			PlayerClass* GetPlayer() { return player; }
@@ -26,6 +29,7 @@ namespace NCL
 		protected:
 
 			
+			WorldGeneration* worldGen;
 
 			void InitCamera();
 			void UpdateKeys();
@@ -56,7 +60,6 @@ namespace NCL
 			PlayerClass* player = nullptr;
 
 			bool useGravity;
-			bool inSelectionMode;
 
 			float		forceMagnitude;
 
@@ -72,7 +75,6 @@ namespace NCL
 				lockedObject = o;
 			}
 
-			WorldGeneration* worldGen;
 
 		};
 	}

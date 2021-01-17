@@ -185,6 +185,30 @@ Quaternion Quaternion::EulerAnglesToQuaternion(float roll, float yaw, float pitc
 	return q;
 };
 
+Quaternion Quaternion::EulerAnglesToQuaternion(Vector3 angles)
+{
+	float cos1 = (float)cos(Maths::DegreesToRadians(angles.y * 0.5f));
+	float cos2 = (float)cos(Maths::DegreesToRadians(angles.z * 0.5f));
+	float cos3 = (float)cos(Maths::DegreesToRadians(angles.x * 0.5f));
+
+	float sin1 = (float)sin(Maths::DegreesToRadians(angles.y * 0.5f));
+	float sin2 = (float)sin(Maths::DegreesToRadians(angles.z * 0.5f));
+	float sin3 = (float)sin(Maths::DegreesToRadians(angles.x * 0.5f));
+
+	Quaternion q;
+
+	q.x = (sin1 * sin2 * cos3) + (cos1 * cos2 * sin3);
+	q.y = (sin1 * cos2 * cos3) + (cos1 * sin2 * sin3);
+	q.z = (cos1 * sin2 * cos3) - (sin1 * cos2 * sin3);
+	q.w = (cos1 * cos2 * cos3) - (sin1 * sin2 * sin3);
+
+	return q;
+};
+
+
+
+
+
 Quaternion Quaternion::AxisAngleToQuaterion(const Vector3& vector, float degrees) {
 	float theta		= (float)Maths::DegreesToRadians(degrees);
 	float result	= (float)sin(theta / 2.0f);

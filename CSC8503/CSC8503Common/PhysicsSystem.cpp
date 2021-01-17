@@ -245,8 +245,12 @@ void PhysicsSystem::BasicCollisionDetection()
 			CollisionDetection::CollisionInfo info;
 			if (CollisionDetection::ObjectIntersection(*i, *j, info))
 			{
-				std::cout << " Collision between " << (*i)->GetName()
-					<< " and " << (*j)->GetName() << std::endl;
+				if ((*i)->GetName() == "Player" || (*j)->GetName() == "Player")
+				{
+
+					std::cout << " Collision between " << (*i)->GetName()
+						<< " and " << (*j)->GetName() << std::endl;
+				}
 
 				ImpulseResolveCollision(*info.a, *info.b, info.point);
 				info.framesLeft = numCollisionFrames;
@@ -319,12 +323,16 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	///TODO friction calculate  collision tanget  and add it using physics
 	//
 
+	//if()
+
 	Vector3 tangent = contactVelocity - (p.normal * Vector3::Dot(contactVelocity, p.normal));
 	Vector3 tangentNormalized = tangent.Normalised();
 
 	float angularfriction = Vector3::Dot(inertiaA + inertiaB, tangentNormalized);
-	//TODO add variable
-	float jt = (- .5f * Vector3::Dot(contactVelocity, tangentNormalized)) / (totalMass + angularfriction);
+	// mean of both frictions
+	float mu = (physA->GetFriction() + physB->GetFriction()) / 2;
+
+	float jt = -(mu * Vector3::Dot(contactVelocity, tangentNormalized)) / (totalMass + angularfriction);
 	Vector3 frictionImpulse = tangentNormalized * jt;
 
 
@@ -440,7 +448,11 @@ void PhysicsSystem::IntegrateAccel(float dt)
 
 		if (applyGravity && inverseMass > 0)
 		{
-			accel += gravity; // don 't move infinitely heavy things
+
+			if (object->AffectedByGravity())
+			{
+				accel += gravity; // don 't move infinitely heavy things
+			}
 
 		}
 

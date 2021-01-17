@@ -47,13 +47,14 @@ namespace NCL
 			}
 
 			velocity = physicsObject->GetLinearVelocity();
-			/*if (!isGrounded)
-			{
-				velocity += Vector3(0, 1.2, 0);
-			}*/
+			
 
-			Vector3  vel = Maths::Clamp(velocity, Vector3(-200, -400, -200), Vector3(200, 400, 200));
+			float clamp = 25;
+
+			Vector3  vel = Maths::Clamp(velocity, Vector3(-clamp, -clamp, -clamp), Vector3(clamp, clamp, clamp));
 			physicsObject->SetLinearVelocity(vel);
+
+			
 
 
 		}
@@ -63,7 +64,7 @@ namespace NCL
 		void PlayerClass::OnCollisionBegin(GameObject* otherObject)
 		{
 
-			
+
 			if (otherObject->layer == Layer::Ground)
 			{
 				isGrounded = true;
@@ -75,6 +76,7 @@ namespace NCL
 			if (otherObject->layer == Layer::Ice)
 			{
 
+				GetPhysicsObject()->SetFriction(.0f);
 			}
 			if (otherObject->layer == Layer::Sticky)
 			{
@@ -86,6 +88,31 @@ namespace NCL
 			}
 
 
+		}
+
+
+		void PlayerClass::OnCollisionEnd(GameObject* otherObject)
+		{
+			if (otherObject->layer == Layer::Ground)
+			{
+				//isGrounded = true;
+			}
+			if (otherObject->layer == Layer::Collectible)
+			{
+				//coins += 12;
+			}
+			if (otherObject->layer == Layer::Ice)
+			{
+				GetPhysicsObject()->SetFriction(.5f);
+			}
+			if (otherObject->layer == Layer::Sticky)
+			{
+
+			}
+			if (otherObject->layer == Layer::Lava)
+			{
+
+			}
 		}
 
 		void PlayerClass::Jump()

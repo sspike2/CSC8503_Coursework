@@ -31,12 +31,34 @@ namespace NCL {
 				return force;
 			}
 
+
+			void SetAffectedByGravity(bool useGravity)
+			{
+				this->useGravity = useGravity;
+			}
+
+			bool AffectedByGravity() const
+			{
+				return useGravity;
+			}
+
 			void SetInverseMass(float invMass) {
 				inverseMass = invMass;
 			}
 
 			float GetInverseMass() const {
 				return inverseMass;
+			}
+
+
+			void SetFriction(float fric)
+			{
+				friction = fric;
+			}
+
+			float GetFriction() const
+			{
+				return friction;
 			}
 
 			void ApplyAngularImpulse(const Vector3& force);
@@ -75,9 +97,13 @@ namespace NCL {
 			const CollisionVolume* volume;
 			Transform*		transform;
 
+
+			bool useGravity;
+
 			float inverseMass;
 			float elasticity;
 			float friction;
+
 
 			//linear stuff
 			Vector3 linearVelocity;

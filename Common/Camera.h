@@ -21,7 +21,7 @@ namespace NCL {
 			yaw			= 0.0f;
 
 			fov			= 90;
-			nearPlane	= 1.0f;
+			nearPlane	= 25.0f;
 			farPlane	= 100.0f;
 
 			camType		= CameraType::Perspective;
@@ -33,7 +33,7 @@ namespace NCL {
 			this->position	= position;
 
 			this->fov		= 90;
-			this->nearPlane = 1.0f;
+			this->nearPlane = 5.0f;
 			this->farPlane	= 100.0f;
 
 			this->camType	= CameraType::Perspective;

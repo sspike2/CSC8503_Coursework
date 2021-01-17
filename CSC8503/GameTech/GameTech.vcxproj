@@ -148,6 +148,7 @@
     <ClCompile Include="PlayerClass.cpp" />
     <ClCompile Include="StateGameObject.cpp" />
     <ClCompile Include="TutorialGame.cpp" />
+    <ClCompile Include="UpDownGateStateGameObj.cpp" />
     <ClCompile Include="WorldGeneration.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +163,7 @@
     <ClInclude Include="PlayerClass.h" />
     <ClInclude Include="StateGameObject.h" />
     <ClInclude Include="TutorialGame.h" />
+    <ClInclude Include="UpDownGateStateGameObj.h" />
     <ClInclude Include="WorldGeneration.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

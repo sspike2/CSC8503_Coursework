@@ -19,11 +19,12 @@ namespace NCL
 		protected:
 			int playerHealth = 100;
 			int score = 0;
-			int speed = 25;
+			int speed = 150;
 			bool isGrounded;
 			Vector3 velocity;
 
 			virtual void OnCollisionBegin(GameObject* otherObject);
+			virtual void OnCollisionEnd(GameObject* otherObject);
 
 			void Jump();
 

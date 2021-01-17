@@ -13,9 +13,9 @@ int a = 0;
 CourseGame::CourseGame()
 {
 	std::cout << std::endl << std::endl << a << std::endl << std::endl << std::endl;
-	world = new GameWorld();
+	world    = new GameWorld();
 	renderer = new GameTechRenderer(*world);
-	physics = new PhysicsSystem(*world);
+	physics  = new PhysicsSystem(*world);
 	worldGen = new WorldGeneration(world, this);
 
 
@@ -52,6 +52,9 @@ void CourseGame::UpdateGame(float dt)
 	if (player != nullptr)
 	{
 		player->Update(dt);
+		float z = player->GetPhysicsObject()->GetLinearVelocity().z;
+		Debug::Print(std::to_string(z), Vector2(5, 5));
+
 	}
 
 	if (worldGen != nullptr)
@@ -261,7 +264,7 @@ void CourseGame::DebugObjectMovement()
 
 void CourseGame::InitCamera()
 {
-	world->GetMainCamera()->SetNearPlane(0.1f);
+	world->GetMainCamera()->SetNearPlane(5);
 	world->GetMainCamera()->SetFarPlane(50000.0f);
 	world->GetMainCamera()->SetPitch(-15.0f);
 	world->GetMainCamera()->SetYaw(180);
@@ -447,15 +450,23 @@ bool CourseGame::SelectObject()
 		int z = selectionObject->GetTransform().GetOrientation().ToEuler().z;
 
 		string str = "Object orientation " + std::to_string(x) + " "
-			+ std::to_string(y) + " "
-			+ std::to_string(z) + " ";
+											+ std::to_string(y) + " "
+											+ std::to_string(z) + " ";
+
+		 x = selectionObject->GetTransform().GetPosition().x;
+		 y = selectionObject->GetTransform().GetPosition().y;
+		 z = selectionObject->GetTransform().GetPosition().z;
+		string str2 = "Object Position " + std::to_string(x) + " "
+											+ std::to_string(y) + " "
+											+ std::to_string(z) + " ";
 
 		//renderer->DrawString("Press L to lock selected object object!", Vector2(5, 80));
 		renderer->DrawString(str, Vector2(5, 75));
-
+		renderer->DrawString(str2, Vector2(5, 70));
+		renderer->DrawString(selectionObject->GetName(), Vector2(5, 65));
 	}
 
-	if (Window::GetKeyboard()->KeyPressed(NCL::KeyboardKeys::L))
+	/*if (Window::GetKeyboard()->KeyPressed(NCL::KeyboardKeys::L))
 	{
 		if (selectionObject)
 		{
@@ -469,7 +480,7 @@ bool CourseGame::SelectObject()
 			}
 		}
 
-	}
+	}*/
 
 	return false;
 }

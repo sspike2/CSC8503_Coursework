@@ -25,6 +25,9 @@
     <Filter Include="Pathfinding">
       <UniqueIdentifier>{84f869c2-c73b-4eb0-ace4-ff4d685ef4ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics\Constrainsts">
+      <UniqueIdentifier>{e11452d1-ecf1-4415-9ec9-2ff7372b11d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameWorld.h">
@@ -66,9 +69,6 @@
     <ClInclude Include="Debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Constraint.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
     <ClInclude Include="PhysicsSystem.h">
       <Filter>Physics</Filter>
     </ClInclude>
@@ -102,8 +102,17 @@
     <ClInclude Include="CapsuleVolume.h">
       <Filter>CollisionDetection</Filter>
     </ClInclude>
+    <ClInclude Include="Constraint.h">
+      <Filter>Physics\Constrainsts</Filter>
+    </ClInclude>
+    <ClInclude Include="HingeJointConstraint.h">
+      <Filter>Physics\Constrainsts</Filter>
+    </ClInclude>
+    <ClInclude Include="LockPerAxisConstraint.h">
+      <Filter>Physics\Constrainsts</Filter>
+    </ClInclude>
     <ClInclude Include="PositionConstraint.h">
-      <Filter>Physics</Filter>
+      <Filter>Physics\Constrainsts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -149,8 +158,14 @@
     <ClCompile Include="QuadTree.cpp">
       <Filter>CollisionDetection</Filter>
     </ClCompile>
+    <ClCompile Include="HingeJointConstraint.cpp">
+      <Filter>Physics\Constrainsts</Filter>
+    </ClCompile>
+    <ClCompile Include="LockPerAxisConstraint.cpp">
+      <Filter>Physics\Constrainsts</Filter>
+    </ClCompile>
     <ClCompile Include="PositionConstraint.cpp">
-      <Filter>Physics</Filter>
+      <Filter>Physics\Constrainsts</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

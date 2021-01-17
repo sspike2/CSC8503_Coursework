@@ -1,4 +1,6 @@
 #include "WorldGeneration.h"
+#include "../CSC8503Common/HingeJointConstraint.h"
+#include "../CSC8503Common/LockPerAxisConstraint.h"
 
 /*
 Each of the little demo scenarios used in the game uses the same 2 meshes,
@@ -55,59 +57,80 @@ WorldGeneration::~WorldGeneration()
 void WorldGeneration::InitWorld()
 {
 	AddFloorToWorld(Vector3(0, -4.9, 400), Vector3(200, 5, 500));
+	AddPlayerToWorld();
 
 	//borders
 	for (int i = 0; i < 4; i++)
 	{
 		AddCubeToWorld(borderPosition[i], borderScale[i], 0,
-			blankTex, Vector4(.2f, .2f, .2f, 1));
+			blankTex, "border", Vector4(.2f, .2f, .2f, 1));
 	}
 
 	//OBB obstacles
 	for (int i = 0; i < 10; i++)
 	{
 		AddOBBToWorld(obstaclePosition[i], Vector3(5, 5, 5), Vector3(0, 45, 0), 0,
-			blankTex, Vector4(.3f, .3f, .3f, 1));
+			blankTex, Vector4(.2f, .2f, .2f, 1));
 	}
 
 	//LAVA
-	GameObject* lava1 = AddCubeToWorld(Vector3(-90, 0.1f, 60), Vector3(65,0.1f, 7),
-		0, lavaTex);
+	GameObject* lava1 = AddCubeToWorld(Vector3(-90, 0.1f, 60), Vector3(65, 0.1f, 7),
+		0, lavaTex, "Lava");
 	lava1->layer = Layer::Lava;
 
-	GameObject* lava2 = AddCubeToWorld(Vector3(90, 0.1f, 60), Vector3(65,0.1f, 7),
-		0, lavaTex);
+	GameObject* lava2 = AddCubeToWorld(Vector3(90, 0.1f, 60), Vector3(65, 0.1f, 7),
+		0, lavaTex, "Lava");
 	lava2->layer = Layer::Lava;
 
 
 	//Sticky
-	GameObject* sticky1 = AddCubeToWorld(Vector3(0, 0.1f, 120), Vector3(60,0.1f, 7),
-		0, blankTex, Vector4(1, 1, 0, 1));
+	GameObject* sticky1 = AddCubeToWorld(Vector3(0, 0.1f, 120), Vector3(60, 0.1f, 7),
+		0, blankTex, "Lava", Vector4(1, 1, 0, 1));
+	GameObject* sticky2 = AddCubeToWorld(Vector3(0, 0.1f, 240), Vector3(60, 0.1f, 7),
+		0, blankTex, "Lava", Vector4(1, 1, 0, 1));
+
 	sticky1->layer = Layer::Sticky;
-	GameObject* sticky2 = AddCubeToWorld(Vector3(0, 0.1f, 240), Vector3(60,0.1f, 7),
-		0, blankTex, Vector4(1, 1, 0, 1));
 	sticky2->layer = Layer::Sticky;
 
+	sticky1->GetPhysicsObject()->SetFriction(1);
+	sticky1->GetPhysicsObject()->SetFriction(1);
+
 	//Icy
-	GameObject* icy = AddCubeToWorld(Vector3(0, 0.1f, 180), Vector3(150,0.1f, 7),
-		0, blankTex, Vector4(0, 1, 0.75f, 1));
+	GameObject* icy = AddCubeToWorld(Vector3(0, 0.1f, 180), Vector3(150, 0.1f, 7),
+		0, blankTex, "Ice", Vector4(0, 1, 0.75f, 1));
 	icy->layer = Layer::Ice;
+	icy->GetPhysicsObject()->SetFriction(0);
 
 
 	////StateMachine
 
-	////statemachine walls
-	//for (int i = 0; i < 4; i++)
-	//{
-	//	AddCubeToWorld(StateMachineWallPosition[i], Vector3(5, 14, 5), 0,
-	//		blankTex, Vector4(.2f, .2f, .2f, 1));
-	//}
-	////TODO add stateMachine
-	stateObjects.emplace_back(AddStateObjectToWorld(Vector3(0, 5, 10)));
+	//statemachine walls
+	for (int i = 0; i < 4; i++)
+	{
+		AddCubeToWorld(StateMachineWallPosition[i], Vector3(5, 14, 5), 0,
+			blankTex, "State Machine Wall", Vector4(.2f, .2f, .2f, 1));
+	}
+	// stateMachine
 
+	for (int i = 0; i < 6; i++)
+	{
+		UpDownGateStateGameObj* stateMach = AddStateObjectToWorld(StateMachineDoorPosition[i], i % 2 == 0 ? 10 : 0);
+		stateObjects.emplace_back(stateMach);
+		stateMach->GetPhysicsObject()->SetFriction(0);
+		LockPerAxisConstraint* lock = new LockPerAxisConstraint(stateMach, true, false, true);
+		world->AddConstraint(lock);
+	}
+
+	//stateObjects.emplace_back(AddStateObjectToWorld(Vector3(-25, 10, 10), 3.0f));
+
+
+	// HingeJoints
+	for (int i = 0; i < 4; i++)
+	{
+		AddHingeJoints(i);
+	}
 	//player
 
-	InitPlayer();
 
 }
 
@@ -148,9 +171,9 @@ GameObject* WorldGeneration::AddFloorToWorld(const Vector3& position, const Vect
 
 
 GameObject* WorldGeneration::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass,
-	OGLTexture* tex, Vector4 color)
+	OGLTexture* tex, string name, Vector4 color)
 {
-	GameObject* cube = new GameObject("Cube");
+	GameObject* cube = new GameObject(name);
 	AABBVolume* volume = new AABBVolume(dimensions);
 
 	cube->SetBoundingVolume((CollisionVolume*)volume);
@@ -174,68 +197,32 @@ GameObject* WorldGeneration::AddCubeToWorld(const Vector3& position, Vector3 dim
 GameObject* WorldGeneration::AddOBBToWorld(const Vector3& position, Vector3 dimensions,
 	Vector3 EulerAngles, float inverseMass, OGLTexture* tex, Vector4 color)
 {
-	GameObject* cube = new GameObject("Cube");
+	GameObject* obb = new GameObject("OBB");
 	OBBVolume* volume = new OBBVolume(dimensions);
 
-	cube->SetBoundingVolume((CollisionVolume*)volume);
+	obb->SetBoundingVolume((CollisionVolume*)volume);
 
 	//cube->GetPhysicsObject()->set
 
-	cube->GetTransform()
+	obb->GetTransform()
 		.SetPosition(position)
 		.SetScale(dimensions * 2)
 		.SetOrientation(Quaternion::EulerAnglesToQuaternion(EulerAngles.x, EulerAngles.y, EulerAngles.z))
 		;
 
 
-	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, tex, basicShader, color));
-	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
+	obb->SetRenderObject(new RenderObject(&obb->GetTransform(), cubeMesh, tex, basicShader, color));
+	obb->SetPhysicsObject(new PhysicsObject(&obb->GetTransform(), obb->GetBoundingVolume()));
 
-	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
-	cube->GetPhysicsObject()->InitCubeInertia();
+	obb->GetPhysicsObject()->SetInverseMass(inverseMass);
+	obb->GetPhysicsObject()->InitCubeInertia();
 
-	world->AddGameObject(cube);
+	world->AddGameObject(obb);
 
-	return cube;
+	return obb;
 }
 
 
-GameObject* WorldGeneration::AddPlayerToWorld(const Vector3& position)
-{
-	float meshSize = 3.0f;
-	float inverseMass = 0.5f;
-
-	GameObject* character = new GameObject();
-
-	AABBVolume* volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
-
-	character->SetBoundingVolume((CollisionVolume*)volume);
-
-	character->GetTransform()
-		.SetScale(Vector3(meshSize, meshSize, meshSize))
-		.SetPosition(position);
-
-	if (rand() % 2)
-	{
-		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshA, nullptr, basicShader));
-	}
-	else
-	{
-		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshB, nullptr, basicShader));
-	}
-	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
-
-	character->GetPhysicsObject()->SetInverseMass(inverseMass);
-	character->GetPhysicsObject()->InitSphereInertia();
-
-	world->AddGameObject(character);
-
-
-
-	//lockedObject = character;
-
-	return character;
-}
 
 GameObject* WorldGeneration::AddEnemyToWorld(const Vector3& position)
 {
@@ -262,25 +249,25 @@ GameObject* WorldGeneration::AddEnemyToWorld(const Vector3& position)
 	return character;
 }
 
-StateGameObject* WorldGeneration::AddStateObjectToWorld(const Vector3& position)
+UpDownGateStateGameObj* WorldGeneration::AddStateObjectToWorld(const Vector3& position, float counter)
 {
-	StateGameObject* apple = new StateGameObject();
-
-	SphereVolume* volume = new SphereVolume(0.25f);
-	apple->SetBoundingVolume((CollisionVolume*)volume);
-	apple->GetTransform()
-		.SetScale(Vector3(0.25, 0.25, 0.25))
+	UpDownGateStateGameObj* stateObj = new UpDownGateStateGameObj(counter);
+	Vector3 dimentions = Vector3(37, 7, 5);
+	AABBVolume* volume = new AABBVolume(dimentions);
+	stateObj->SetBoundingVolume((CollisionVolume*)volume);
+	stateObj->GetTransform()
+		.SetScale(dimentions * 2)
 		.SetPosition(position);
 
-	apple->SetRenderObject(new RenderObject(&apple->GetTransform(), bonusMesh, nullptr, basicShader));
-	apple->SetPhysicsObject(new PhysicsObject(&apple->GetTransform(), apple->GetBoundingVolume()));
+	stateObj->SetRenderObject(new RenderObject(&stateObj->GetTransform(), cubeMesh, nullptr, basicShader, Vector4(1, 0, 0, 1)));
+	stateObj->SetPhysicsObject(new PhysicsObject(&stateObj->GetTransform(), stateObj->GetBoundingVolume()));
 
-	apple->GetPhysicsObject()->SetInverseMass(0.f);
-	apple->GetPhysicsObject()->InitSphereInertia();
+	stateObj->GetPhysicsObject()->SetInverseMass(1.0f);
+	stateObj->GetPhysicsObject()->InitCubeInertia();
+	stateObj->GetPhysicsObject()->SetAffectedByGravity(false);
+	world->AddGameObject(stateObj);
 
-	world->AddGameObject(apple);
-
-	return apple;
+	return stateObj;
 }
 
 GameObject* WorldGeneration::AddBonusToWorld(const Vector3& position)
@@ -359,28 +346,28 @@ GameObject* WorldGeneration::AddCapsuleToWorld(const Vector3& position, float ha
 
 
 
-GameObject* WorldGeneration::InitPlayer()
+GameObject* WorldGeneration::AddPlayerToWorld()
 {
 	PlayerClass* player = new PlayerClass("Player");
-	float radius = 1;
+	float radius = 3;
+	float halfHeight = 6;
 
 	Vector3 sphereSize = Vector3(radius, radius, radius);
 
-	CapsuleVolume* volume = new CapsuleVolume(5, radius);
+	CapsuleVolume* volume = new CapsuleVolume(halfHeight, radius);
 
 	player->SetBoundingVolume((CollisionVolume*)volume);
 
 	player->GetTransform()
-		.SetScale(Vector3(5, 5, 5))
-		.SetPosition(Vector3(0, 10, 0));
+		.SetScale(Vector3(radius * 2, halfHeight, radius * 2))
+		.SetPosition(Vector3(0, 5, 0));
 
 	player->SetRenderObject(new RenderObject(&player->GetTransform(), capsuleMesh, playerTex, basicShader));
 	//player->setc
 	player->SetPhysicsObject(new PhysicsObject(&player->GetTransform(), player->GetBoundingVolume()));
 
 	player->GetPhysicsObject()->SetInverseMass(2);
-	player->GetPhysicsObject()->InitSphereInertia();
-
+	player->GetPhysicsObject()->InitCubeInertia();
 	world->AddGameObject(player);
 
 	courseGame->SetPlayer(player);
@@ -401,10 +388,8 @@ void WorldGeneration::BridgeConstraintTest()
 
 	Vector3 startPos = Vector3(5, 5, 5);
 
-	GameObject* start = AddCubeToWorld(startPos + Vector3(0, 0, 0)
-		, cubeSize, 0, basicTex);
-	GameObject* end = AddCubeToWorld(startPos + Vector3((numLinks + 2)
-		* cubeDistance, 0, 0), cubeSize, 0, basicTex);
+	GameObject* start = AddCubeToWorld(startPos + Vector3(0, 0, 0) , cubeSize, 0, basicTex);
+	GameObject* end = AddCubeToWorld(startPos + Vector3((numLinks + 2) * cubeDistance, 0, 0), cubeSize, 0, basicTex);
 
 	GameObject* previous = start;
 
@@ -421,5 +406,25 @@ void WorldGeneration::BridgeConstraintTest()
 	PositionConstraint* constraint = new PositionConstraint(previous,
 		end, maxDistance);
 	world->AddConstraint(constraint);
+
+}
+
+
+void WorldGeneration::AddHingeJoints(int Index)
+{
+	GameObject* pole = AddOBBToWorld(hingePolePosition[Index], Vector3(0.5f, 15, .5f), Vector3(), .0f, blankTex, Vector4(.2f, .2f, .2f, 1));
+	GameObject* door = AddOBBToWorld(hingeDoorPosition[Index], hingeDoorScale[Index], Vector3(), 05.f, blankTex, Vector4(.15f, 0.f, 0.f, 1));
+
+
+	PositionConstraint* pos = new PositionConstraint(pole, door, hingeDoorScale[Index].x + (hingeDoorScale[Index].x < 0 ? -1 : 1));
+	HingeJointConstraint* hinge = new HingeJointConstraint(pole, door);
+
+	door->GetPhysicsObject()->SetAffectedByGravity(false);
+	pole->GetPhysicsObject()->SetAffectedByGravity(false);
+
+	//LockPerAxisConstraint* lock = new LockPerAxisConstraint(door,)
+
+	world->AddConstraint(hinge);
+	world->AddConstraint(pos);
 
 }

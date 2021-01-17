@@ -48,6 +48,7 @@ namespace NCL {
 			void		CalculateW();	//builds 4th component when loading in shortened, 3 component quaternions
 
 			static Quaternion EulerAnglesToQuaternion(float pitch, float yaw, float roll);
+			static Quaternion EulerAnglesToQuaternion(Vector3 angles);
 			static Quaternion AxisAngleToQuaterion(const Vector3& vector, float degrees);
 
 			inline bool  operator ==(const Quaternion &from)	const {
